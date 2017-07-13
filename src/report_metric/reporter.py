@@ -33,7 +33,7 @@ class ReportBase(object):
     """
 
     def __init__(self):
-        self.pattern = re.compile(ur'^([A-Za-z]{2,6}((?!-)\.[A-Za-z0-9-]{1,63}(?<!-))+)$')
+        self.pattern = re.compile(ur'^(?:([A-Za-z]+)\.([A-Za-z0-9-\.\_]+))$')
 
     def gauge(self, name, number):
         """Report absolute gauge value
@@ -50,11 +50,13 @@ class ReportBase(object):
             raise StatsReportException(name, number)
 
     def _validate_name(self, name):
+        # TODO figure out if there's still need for prefix/suffix
         matches = re.findall(self.pattern, name)
-        names = matches[0][0].split('.')
-        prefix = names[0]
-        fullname = '.'.join(names[1:])
-        return prefix, fullname
+        if len(matches) > 0:
+            return matches[0][0], matches[0][1]
+        else:
+            raise StatsReportException("Invalid Name: " + name)
+
 
     def _dotted(self, prefix, name):
         return '{}.{}'.format(prefix, name)

@@ -18,17 +18,11 @@ def gauge(name, number, destination=None):
     Helper method for single call sending of a gauge
     :param name: metric name
     :param number: metric number
+    :param destination: optional, if not sending to default
     :return: 
     '''
     try:
         setup_reporter(destination).gauge(name, number)
-    except reporter.StatsReportException as e:
-        #   Swallow metric related errors after logging to avoid interfering with app
-        logging.exception(str(e))
-
-def counter(name, number, destination=None):
-    try:
-        setup_reporter(destination).counter(name, number)
     except reporter.StatsReportException as e:
         #   Swallow metric related errors after logging to avoid interfering with app
         logging.exception(str(e))
