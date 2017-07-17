@@ -5,13 +5,16 @@ import settings
 
 logging.basicConfig(level=logging.DEBUG)
 
-def setup_reporter(destination):
-    # TODO, allow one off destinations
-    if reporter.LIBRATO and settings.get('METRICS_LIBRATO_USER'):
+def setup_reporter(destination = None):
+    destination = destination or settings.get('METRICS_DESTINATION', 'librato')
+    if destination == 'librato' and reporter.LIBRATO and settings.get('METRICS_LIBRATO_USER'):
         return reporter.LibratoReport(username=settings.get('METRICS_LIBRATO_USER'),
                                       api_key=settings.get('METRICS_LIBRATO_TOKEN'),
                                       source=settings.get('METRICS_LIBRATO_SOURCE', None))
-    raise reporter.StatsReportException('No available destination') # maybe not right exception
+
+    elif destination == 'collectd' and reporter.COLLECTD:
+        return reporter.CollectdReport()
+    raise reporter.StatsReportException('No available/configured destination') # maybe not right exception
 
 def gauge(name, number, destination=None):
     '''

@@ -4,6 +4,7 @@ import re
 
 try:
     import collectd
+    collectd.start_threads()
 
     COLLECTD = True
 except ImportError:  # pragma: nocover
@@ -78,7 +79,7 @@ class CollectdReport(ReportBase):
         super(CollectdReport, self).__init__()
 
     def _rename(self, prefix, name):
-        return '{}_{}'.format(prefix, name.replace('.', '_'))
+        return '{}-{}'.format(prefix, name.replace('.', '-'))
 
     def _gauge(self, prefix, name, number):
         reporter = getattr(self.report, prefix)
