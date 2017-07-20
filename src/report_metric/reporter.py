@@ -135,10 +135,8 @@ class LibratoReport(ReportBase):
             raise StatsReportException("Error reporting to Librato", e)
 
     def _counter(self, prefix, name, number):
-        try:
-            return self.report.submit(self._dotted(prefix, name), number, type='counter') or True
-        except (ValueError, socket.error) as e:
-            raise StatsReportException("Error reporting to Librato", e)
+        # Librato has no API level idea of a counter, just send a gauge
+        return self._gauge(prefix, name, number)
 
 
 class NewRelicReport(ReportBase):
