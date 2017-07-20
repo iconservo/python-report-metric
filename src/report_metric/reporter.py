@@ -4,6 +4,7 @@ import re
 
 try:
     import collectd
+    collectd.SEND_INTERVAL = 0.5
     collectd.start_threads()
 
     COLLECTD = True
@@ -23,6 +24,7 @@ try:
 except ImportError:  # pragma: nocover
     NEWRELIC = False
 
+import backends.direct
 
 class StatsReportException(Exception):
     pass
@@ -79,12 +81,36 @@ class CollectdReport(ReportBase):
         super(CollectdReport, self).__init__()
 
     def _rename(self, prefix, name):
-        return '{}-{}'.format(prefix, name.replace('.', '-'))
+        return '{}-{}'.format(prefix, name.replace('.', '_'))
 
     def _gauge(self, prefix, name, number):
         reporter = getattr(self.report, prefix)
-        dictargs = {self._rename(prefix, name): number}
+        dictargs = {(name.replace('.', '_')): number}
         reporter.set_exact(**dictargs)
+        return True
+
+    def _counter(self, prefix, name, number):
+        reporter = getattr(self.report, prefix)
+        dictargs = {self._rename(prefix, name): number}
+        reporter.record(**dictargs)
+
+class DirectReport(ReportBase):
+    """ Report to Collectd Directly
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.report = collectd.Connection(*args, **kwargs)
+        super(DirectReport, self).__init__()
+
+    def _rename(self, prefix, name):
+        return '{}-{}'.format(prefix, name.replace('.', '_'))
+
+    def _gauge(self, prefix, name, number):
+        reporter = getattr(self.report, prefix)
+        #dictargs = {(name.replace('.', '_')): number}
+        #reporter.set_exact(**dictargs)
+        backends.direct.send_stat(name, number, prefix=prefix)
+        return True
 
     def _counter(self, prefix, name, number):
         reporter = getattr(self.report, prefix)

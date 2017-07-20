@@ -14,6 +14,8 @@ def setup_reporter(destination = None):
 
     elif destination == 'collectd' and reporter.COLLECTD:
         return reporter.CollectdReport()
+    elif destination == 'direct':
+        return reporter.DirectReport()
     raise reporter.StatsReportException('No available/configured destination') # maybe not right exception
 
 def gauge(name, number, destination=None):
