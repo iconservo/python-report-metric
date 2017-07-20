@@ -1,6 +1,6 @@
 
-import os
-import unittest
+import pytest
+import mock
 import report_metric
 from report_metric import metric, reporter
 
@@ -9,14 +9,11 @@ from report_metric import metric, reporter
 def test_main():
     assert report_metric  # use your library here
 
-def test_setup_reporter_defaults():
+def test_setup_reporter_defaults(set_librato_credentials):
     # Librato is our default without config for the moment
-    set_librato_credentials()
     assert isinstance(metric.setup_reporter(), reporter.LibratoReport)
 
-def test_setup_reporter_from_parameter():
-    set_librato_credentials()
-
+def test_setup_reporter_from_parameter(set_librato_credentials):
     rep = metric.setup_reporter('librato')
     assert isinstance(rep, reporter.LibratoReport)
 
@@ -26,9 +23,8 @@ def test_setup_reporter_from_parameter():
 
 # TODO, these are barely smoke tests right now, making sure at least you can make the call
 
-@unittest.skip("Breaks on credentials at the moment")
-def test_librato_gauge():
-    set_librato_credentials()
+@pytest.mark.skip("Breaks on credentials at the moment")
+def test_librato_gauge(set_librato_credentials):
     rep = metric.setup_reporter('librato')
     rep.gauge("Test.SubmissionLibratoCheck", 1)
 
@@ -39,10 +35,3 @@ def test_collectd_gauge_submission():
 def test_direct_gauge_submission():
     rep = metric.setup_reporter('direct')
     rep.gauge("Test.SubmissionDirectCheck", 1)
-
-'''
-Helper Methods
-'''
-def set_librato_credentials():
-    os.environ["METRICS_LIBRATO_USER"]="test@example.com"
-    os.environ["METRICS_LIBRATO_TOKEN"]="123"
