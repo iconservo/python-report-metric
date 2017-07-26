@@ -1,11 +1,11 @@
 
 import pytest
-import mock
+from mock import patch, MagicMock
 import report_metric
 from report_metric import metric, reporter
+import os
 
 # TODO break these tests across more files, logical organization TBD
-
 def test_main():
     assert report_metric  # use your library here
 
@@ -21,8 +21,45 @@ def test_setup_reporter_from_parameter(set_librato_credentials):
     assert isinstance(rep, reporter.CollectdReport)
 
 
-# TODO, these are barely smoke tests right now, making sure at least you can make the call
+# TODO, source shouldn't be unique to librato
+def test_set_source_from_parameter(set_librato_credentials):
+    rep = metric.setup_reporter('librato', 'custom_source')
+    assert rep.source == 'custom_source'
 
+
+def test_set_source_from_env_setting():
+    os.environ['METRICS_SOURCE'] = 'environ_source' # probably should cleanup, but...
+    rep = metric.setup_reporter('librato')
+    assert rep.source == 'environ_source'
+
+
+# Smoke tests to make sure "frontend" side of module is handing off to backend
+@patch("report_metric.metric.setup_reporter")
+def test_gauge(mock_setup_reporter):
+    mock_reporter = MagicMock(spec=reporter.ReportBase)
+    mock_setup_reporter.return_value = mock_reporter
+
+    # Try
+    metric.gauge("mocked-gauge", 22)
+
+    # Verify
+    mock_reporter.gauge.assert_called_once_with("mocked-gauge", 22)
+
+
+# Smoke tests to make sure "frontend" side of module is handing off to backend
+@patch("report_metric.metric.setup_reporter")
+def test_counter(mock_setup_reporter):
+    mock_reporter = MagicMock(spec=reporter.ReportBase)
+    mock_setup_reporter.return_value = mock_reporter
+
+    # Try
+    metric.counter("mocked-counter")
+
+    # Verify
+    mock_reporter.counter.assert_called_once_with("mocked-counter", 1) # we expect one unless other is passed
+
+
+# TODO better tests, these are barely smoke tests
 @pytest.mark.skip("Breaks on credentials at the moment")
 def test_librato_gauge(set_librato_credentials):
     rep = metric.setup_reporter('librato')
