@@ -58,6 +58,16 @@ def test_counter(mock_setup_reporter):
     # Verify
     mock_reporter.counter.assert_called_once_with("mocked-counter", 1) # we expect one unless other is passed
 
+@patch("report_metric.metric.setup_reporter")
+def test_specific_source(mock_setup_reporter):
+    mock_reporter = MagicMock(spec=reporter.ReportBase)
+    mock_setup_reporter.return_value = mock_reporter
+
+    metric.gauge("mocked-gauge", 123, source="one-off-source")
+
+    mock_reporter.gauge.assert_called_once_with("mocked-gauge", 123) # we expect one unless other is passed
+    mock_setup_reporter.assert_called_once_with(None, "one-off-source") # as as setup_reporter is sent the parameter, other test make sure it's used
+
 
 # TODO better tests, these are barely smoke tests
 @pytest.mark.skip("Breaks on credentials at the moment")
