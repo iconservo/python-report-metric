@@ -95,7 +95,7 @@ class CollectdReport(ReportBase):
         reporter.record(**dictargs)
 
 class DirectReport(ReportBase):
-    """ Report to Collectd Directly
+    """ Report to collectd directly TODO: rename to include collectd
     """
 
     def __init__(self, *args, **kwargs):
@@ -126,6 +126,7 @@ class LibratoReport(ReportBase):
     def __init__(self, *args, **kwargs):
         self.source = kwargs.pop('source',None)
         self.report = librato.connect(*args, **kwargs)
+        self.report.set_timeout(1) # Report quick or skip it, errors will show up as missing reports
         super(LibratoReport, self).__init__()
 
     def _gauge(self, prefix, name, number):
@@ -157,3 +158,21 @@ class NewRelicReport(ReportBase):
 
     def _counter(self, prefix, name, number):
         self.reporter.record_custom_metric(self._rename(prefix, name), number)
+
+
+class DummyReport(ReportBase):
+    """ Do nothing with the metrics
+        Useful way to disable when running unit tests in a Django app
+    """
+    def __init__(self, *args, **kwargs):
+        self.source = kwargs.pop('source', None)
+        super(DummyReport, self).__init__()
+
+    def _gauge(self, prefix, name, number):
+        return self._record_metric((prefix + "." + name), number)
+
+    def _counter(self, prefix, name, number):
+        return self._record_metric((prefix + "." + name), number)
+
+    def _record_metric(self, name, number):
+        return True

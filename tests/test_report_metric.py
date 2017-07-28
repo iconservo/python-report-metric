@@ -20,6 +20,8 @@ def test_setup_reporter_from_parameter(set_librato_credentials):
     rep = metric.setup_reporter('collectd')
     assert isinstance(rep, reporter.CollectdReport)
 
+    rep = metric.setup_reporter('dummy')
+    assert isinstance(rep, reporter.DummyReport)
 
 # TODO, source shouldn't be unique to librato
 def test_set_source_from_parameter(set_librato_credentials):
@@ -32,6 +34,11 @@ def test_set_source_from_env_setting():
     rep = metric.setup_reporter('librato')
     assert rep.source == 'environ_source'
 
+
+def test_set_source_from_env_setting_when_passing_none():
+    os.environ['METRICS_SOURCE'] = 'environ_source2' # probably should cleanup, but...
+    rep = metric.setup_reporter('librato', None)
+    assert rep.source == 'environ_source2'
 
 # Smoke tests to make sure "frontend" side of module is handing off to backend
 @patch("report_metric.metric.setup_reporter")

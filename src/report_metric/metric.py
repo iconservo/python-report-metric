@@ -20,6 +20,9 @@ def setup_reporter(destination=None, source=None):
         return reporter.CollectdReport()
     elif destination == 'direct':
         return reporter.DirectReport()
+    elif destination == 'dummy':
+        return reporter.DummyReport()
+
     raise reporter.StatsReportException('No available/configured destination') # maybe not right exception
 
 
