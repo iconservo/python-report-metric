@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 def setup_reporter(destination=None, source=None):
     destination = destination or settings.get('METRICS_DESTINATION', 'librato')
-    source      = source or settings.get('METRICS_SOURCE', None)
+    source = source or settings.get('METRICS_SOURCE', None)
 
     if destination == 'librato' and reporter.LIBRATO and settings.get('METRICS_LIBRATO_USER'):
         return reporter.LibratoReport(username=settings.get('METRICS_LIBRATO_USER'),
@@ -23,7 +23,7 @@ def setup_reporter(destination=None, source=None):
     elif destination == 'dummy':
         return reporter.DummyReport()
 
-    raise reporter.StatsReportException('No available/configured destination') # maybe not right exception
+    raise reporter.StatsReportException('No available/configured destination')  # maybe not right exception
 
 
 def gauge(name, number, **kwargs):
@@ -32,7 +32,7 @@ def gauge(name, number, **kwargs):
     :param name: metric name
     :param number: metric number
     :param destination: optional, if not sending to default
-    :return: 
+    :return:
     '''
     if settings.get('METRICS_USE_CELERY', False):
         _report_gauge.delay(name, number, **kwargs)
