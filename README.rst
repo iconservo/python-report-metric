@@ -64,7 +64,7 @@ Documentation
 https://python-report-metric.readthedocs.io/
 
 ENV/CONFIG Variables
-=============
+====================
 Note: In a Django environment, specify these in settings, otherwise use ENV variables.
 
 

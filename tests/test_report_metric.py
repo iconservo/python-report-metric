@@ -1,9 +1,13 @@
+import os
 
 import pytest
-from mock import patch, MagicMock
+from mock import MagicMock
+from mock import patch
+
 import report_metric
-from report_metric import metric, reporter
-import os
+from report_metric import metric
+from report_metric import reporter
+
 
 # TODO break these tests across more files, logical organization TBD
 def test_main():

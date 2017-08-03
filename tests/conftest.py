@@ -1,5 +1,7 @@
-import pytest
 import os
+
+import pytest
+
 
 @pytest.fixture(scope="session")
 def set_librato_credentials():

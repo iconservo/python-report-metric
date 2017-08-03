@@ -2,6 +2,8 @@
 """
 import re
 
+from report_metric.backends import direct
+
 try:
     import collectd
     collectd.SEND_INTERVAL = 0.5
@@ -24,10 +26,10 @@ try:
 except ImportError:  # pragma: nocover
     NEWRELIC = False
 
-import backends.direct
 
 class StatsReportException(Exception):
     pass
+
 
 class ReportBase(object):
     """Report metrics by name/value.
@@ -36,7 +38,7 @@ class ReportBase(object):
     """
 
     def __init__(self):
-        self.pattern = re.compile(ur'^(?:([A-Za-z]+)\.([A-Za-z0-9-\.\_]+))$')
+        self.pattern = re.compile(r'^(?:([A-Za-z]+)\.([A-Za-z0-9-._]+))$')
 
     def gauge(self, name, number):
         """Report absolute gauge value
@@ -59,7 +61,6 @@ class ReportBase(object):
             return matches[0][0], matches[0][1]
         else:
             raise StatsReportException("Invalid Name: " + name)
-
 
     def _dotted(self, prefix, name):
         return '{}.{}'.format(prefix, name)
@@ -94,22 +95,21 @@ class CollectdReport(ReportBase):
         dictargs = {self._rename(prefix, name): number}
         reporter.record(**dictargs)
 
+
 class DirectReport(ReportBase):
     """ Report to collectd directly TODO: rename to include collectd
     """
 
     def __init__(self, *args, **kwargs):
-        self.report = collectd.Connection(*args, **kwargs)
         super(DirectReport, self).__init__()
 
     def _rename(self, prefix, name):
         return '{}-{}'.format(prefix, name.replace('.', '_'))
 
     def _gauge(self, prefix, name, number):
-        reporter = getattr(self.report, prefix)
-        #dictargs = {(name.replace('.', '_')): number}
-        #reporter.set_exact(**dictargs)
-        backends.direct.send_stat(name, number, prefix=prefix)
+        # dictargs = {(name.replace('.', '_')): number}
+        # reporter.set_exact(**dictargs)
+        direct.send_stat(name, number, prefix=prefix)
         return True
 
     def _counter(self, prefix, name, number):
@@ -124,9 +124,9 @@ class LibratoReport(ReportBase):
     """
 
     def __init__(self, *args, **kwargs):
-        self.source = kwargs.pop('source',None)
+        self.source = kwargs.pop('source', None)
         self.report = librato.connect(*args, **kwargs)
-        self.report.set_timeout(1) # Report quick or skip it, errors will show up as missing reports
+        self.report.set_timeout(1)  # Report quick or skip it, errors will show up as missing reports
         super(LibratoReport, self).__init__()
 
     def _gauge(self, prefix, name, number):

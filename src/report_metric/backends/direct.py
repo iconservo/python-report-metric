@@ -1,6 +1,8 @@
+import socket
 import struct
 import time
-import socket
+
+# flake8: noqa
 
 SEND_INTERVAL = 10      # seconds
 MAX_PACKET_SIZE = 1024  # bytes
@@ -81,4 +83,3 @@ def send_stat(name, number, prefix=""):
     except (socket.error, RuntimeError):
         # Swallow the error, it's only metrics
         pass
-
