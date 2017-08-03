@@ -28,6 +28,9 @@ matrix:
     - python: '3.6'
       env:
         - TOXENV=3.6-nocov
+  exclude:
+    - env: TOXENV=docs
+
 before_install:
   - python --version
   - uname -a

@@ -16,6 +16,9 @@ matrix:
         - TOXENV={{ env }}{% if config.cover %},report{% endif -%}
 {% endfor %}
 
+  exclude:
+    - env: TOXENV=docs
+
 before_install:
   - python --version
   - uname -a
