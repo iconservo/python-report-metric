@@ -16,24 +16,18 @@ matrix:
     - python: '2.7'
       env:
         - TOXENV=2.7-nocov
-    - python: '3.5'
+    - python: '3.4'
       env:
-        - TOXENV=3.5-cover,report
-    - python: '3.5'
+        - TOXENV=3.4-cover,report
+    - python: '3.4'
       env:
-        - TOXENV=3.5-nocov
+        - TOXENV=3.4-nocov
     - python: '3.6'
       env:
         - TOXENV=3.6-cover,report
     - python: '3.6'
       env:
         - TOXENV=3.6-nocov
-    - python: 'pypy-5.4'
-      env:
-        - TOXENV=pypy-cover,report
-    - python: 'pypy-5.4'
-      env:
-        - TOXENV=pypy-nocov
 before_install:
   - python --version
   - uname -a
