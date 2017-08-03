@@ -66,9 +66,11 @@ setup(
         # eg: 'keyword1', 'keyword2', 'keyword3',
     ],
     install_requires=[
+        'celery>=3.1.25'
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     extras_require={
+        'test': ['mock>=2.0.0', 'pytest>=3.1.3', 'librato-metrics>=3.0.1', 'statsd>=3.2.1']
         # eg:
         #   'rst': ['docutils>=0.11'],
         #   ':python_version=="2.6"': ['argparse'],
