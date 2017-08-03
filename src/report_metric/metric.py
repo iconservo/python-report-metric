@@ -1,8 +1,9 @@
 import logging
 
-import reporter
-import settings
 from celery.task import task
+
+from report_metric import reporter
+from report_metric import settings
 
 logging.basicConfig(level=logging.DEBUG)
 

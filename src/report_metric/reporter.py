@@ -2,7 +2,7 @@
 """
 import re
 
-import backends.direct
+from report_metric.backends import direct
 
 try:
     import collectd
@@ -109,7 +109,7 @@ class DirectReport(ReportBase):
     def _gauge(self, prefix, name, number):
         # dictargs = {(name.replace('.', '_')): number}
         # reporter.set_exact(**dictargs)
-        backends.direct.send_stat(name, number, prefix=prefix)
+        direct.send_stat(name, number, prefix=prefix)
         return True
 
     def _counter(self, prefix, name, number):
