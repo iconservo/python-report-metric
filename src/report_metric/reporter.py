@@ -2,6 +2,8 @@
 """
 import re
 
+import backends.direct
+
 try:
     import collectd
     collectd.SEND_INTERVAL = 0.5
@@ -23,8 +25,6 @@ try:
     NEWRELIC = True
 except ImportError:  # pragma: nocover
     NEWRELIC = False
-
-import backends.direct
 
 
 class StatsReportException(Exception):
@@ -101,14 +101,12 @@ class DirectReport(ReportBase):
     """
 
     def __init__(self, *args, **kwargs):
-        self.report = collectd.Connection(*args, **kwargs)
         super(DirectReport, self).__init__()
 
     def _rename(self, prefix, name):
         return '{}-{}'.format(prefix, name.replace('.', '_'))
 
     def _gauge(self, prefix, name, number):
-        reporter = getattr(self.report, prefix)
         # dictargs = {(name.replace('.', '_')): number}
         # reporter.set_exact(**dictargs)
         backends.direct.send_stat(name, number, prefix=prefix)
