@@ -27,6 +27,10 @@ def test_setup_reporter_from_parameter(set_librato_credentials):
     rep = metric.setup_reporter('dummy')
     assert isinstance(rep, reporter.DummyReport)
 
+def test_setup_non_existent_reporter():
+    with pytest.raises(reporter.StatsReportException):
+        rep = metric.setup_reporter('no-such-reporter')
+
 # TODO, source shouldn't be unique to librato
 def test_set_source_from_parameter(set_librato_credentials):
     rep = metric.setup_reporter('librato', 'custom_source')
