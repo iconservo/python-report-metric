@@ -17,8 +17,6 @@ def setup_reporter(destination=None, source=None):
                                       api_key=settings.get('METRICS_LIBRATO_TOKEN'),
                                       source=source)
 
-    elif destination == 'collectd' and reporter.COLLECTD:
-        return reporter.CollectdReport()
     elif destination == 'direct':
         return reporter.DirectReport()
     elif destination == 'dummy':

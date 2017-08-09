@@ -5,14 +5,6 @@ import re
 from report_metric.backends import direct
 
 try:
-    import collectd
-    collectd.SEND_INTERVAL = 0.5
-    collectd.start_threads()
-
-    COLLECTD = True
-except ImportError:  # pragma: nocover
-    COLLECTD = False
-try:
     import librato
     import socket
 
@@ -70,31 +62,6 @@ class ReportBase(object):
 
     def _counter(self, *args, **kwargs):
         raise NotImplemented
-
-
-class CollectdReport(ReportBase):
-    """ Report to Collectd daemon
-        http://pythonhosted.org/collectd
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.report = collectd.Connection(*args, **kwargs)
-        super(CollectdReport, self).__init__()
-
-    def _rename(self, prefix, name):
-        return '{}-{}'.format(prefix, name.replace('.', '_'))
-
-    def _gauge(self, prefix, name, number):
-        reporter = getattr(self.report, prefix)
-        dictargs = {(name.replace('.', '_')): number}
-        reporter.set_exact(**dictargs)
-        return True
-
-    def _counter(self, prefix, name, number):
-        reporter = getattr(self.report, prefix)
-        dictargs = {self._rename(prefix, name): number}
-        reporter.record(**dictargs)
-
 
 class DirectReport(ReportBase):
     """ Report to collectd directly TODO: rename to include collectd
