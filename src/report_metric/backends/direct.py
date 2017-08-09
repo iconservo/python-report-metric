@@ -31,11 +31,14 @@ VALUE_CODES = {
     VALUE_ABSOLUTE: "!Q"
 }
 
+
 def pack_numeric(type_code, number):
     return struct.pack("!HHq", type_code, 12, number)
 
+
 def pack_string(type_code, string):
-    return struct.pack("!HH", type_code, 5 + len(string)) + string + "\0"
+    return struct.pack("!HH", type_code, 5 + len(string)) + string.encode('UTF-8') + b"\0"
+
 
 def pack(typeId, value):
     if typeId in LONG_INT_CODES:
@@ -44,6 +47,7 @@ def pack(typeId, value):
         return pack_string(typeId, value)
     else:
         raise AssertionError("invalid type code " + str(id))
+
 
 def pack_counters(counters):
         length = 6 + len(counters)*9
@@ -54,6 +58,7 @@ def pack_counters(counters):
         for value in counters:
             result.append(struct.pack("<d", value))
         return result
+
 
 def message_start(when=None, host=socket.gethostname(), plugin_inst="", plugin_name="any", value_type=TYPE_NAME):
     return "".join([
@@ -66,6 +71,7 @@ def message_start(when=None, host=socket.gethostname(), plugin_inst="", plugin_n
         pack(TYPE_INTERVAL, SEND_INTERVAL)
     ])
 
+
 # https://habrahabr.ru/post/139053/
 # usage: create_message([working_set_value, peak_working_set_value], plugin_name='service_name', type_name='process_memory')
 def create_message(counters, when=None, host=socket.gethostname(), plugin_inst="", plugin_name="any", type_name=TYPE_NAME):
@@ -73,6 +79,7 @@ def create_message(counters, when=None, host=socket.gethostname(), plugin_inst="
     parts = pack_counters(counters)
     message.extend(parts)
     return "".join(message)
+
 
 def send_stat(name, number, prefix=""):
     message = create_message([number], plugin_name=prefix, plugin_inst=name)
