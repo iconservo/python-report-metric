@@ -21,11 +21,12 @@ def test_setup_reporter_from_parameter(set_librato_credentials):
     rep = metric.setup_reporter('librato')
     assert isinstance(rep, reporter.LibratoReport)
 
-    rep = metric.setup_reporter('collectd')
-    assert isinstance(rep, reporter.CollectdReport)
+    rep = metric.setup_reporter('direct')
+    assert isinstance(rep, reporter.DirectReport)
 
     rep = metric.setup_reporter('dummy')
     assert isinstance(rep, reporter.DummyReport)
+
 
 def test_setup_non_existent_reporter():
     with pytest.raises(reporter.StatsReportException):
@@ -89,10 +90,6 @@ def test_specific_source(mock_setup_reporter):
 def test_librato_gauge(set_librato_credentials):
     rep = metric.setup_reporter('librato')
     rep.gauge("Test.SubmissionLibratoCheck", 1)
-
-def test_collectd_gauge_submission():
-    rep = metric.setup_reporter('collectd')
-    rep.gauge("Test.SubmissionCollectdCheck", 1)
 
 def test_direct_gauge_submission():
     rep = metric.setup_reporter('direct')
