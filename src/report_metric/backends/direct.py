@@ -33,7 +33,7 @@ VALUE_CODES = {
 
 
 def pack_numeric(type_code, number):
-    return struct.pack("!HHq", type_code, 12, number)
+    return struct.pack("!HHq", type_code, 12, int(number))
 
 
 def pack_string(type_code, string):
@@ -61,7 +61,7 @@ def pack_counters(counters):
 
 
 def message_start(when=None, host=socket.gethostname(), plugin_inst="", plugin_name="any", value_type=TYPE_NAME):
-    return "".join([
+    return b"".join([
         pack(TYPE_HOST, host),
         pack(TYPE_TIME, when or time.time()),
         pack(TYPE_PLUGIN, plugin_name),
@@ -78,7 +78,7 @@ def create_message(counters, when=None, host=socket.gethostname(), plugin_inst="
     message = [message_start(when, host, plugin_inst, plugin_name, type_name)]
     parts = pack_counters(counters)
     message.extend(parts)
-    return "".join(message)
+    return b"".join(message)
 
 
 def send_stat(name, number, prefix=""):
