@@ -63,6 +63,7 @@ class ReportBase(object):
     def _counter(self, *args, **kwargs):
         raise NotImplemented
 
+
 class DirectReport(ReportBase):
     """ Report to collectd directly TODO: rename to include collectd
     """

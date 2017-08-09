@@ -1,5 +1,6 @@
-import pytest
 import time
+
+import pytest
 
 from report_metric.backends import direct
 
