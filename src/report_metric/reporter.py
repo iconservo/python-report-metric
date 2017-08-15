@@ -11,12 +11,6 @@ try:
     LIBRATO = True
 except ImportError:  # pragma: nocover
     LIBRATO = False
-try:
-    import newrelic.agent
-
-    NEWRELIC = True
-except ImportError:  # pragma: nocover
-    NEWRELIC = False
 
 
 class StatsReportException(Exception):
@@ -106,26 +100,6 @@ class LibratoReport(ReportBase):
     def _counter(self, prefix, name, number):
         # Librato has no API level idea of a counter, just send a gauge
         return self._gauge(prefix, name, number)
-
-
-class NewRelicReport(ReportBase):
-    """ Report to New Relic over http
-        http://docs.newrelic.com/docs/agents/manage-apm-agents/agent-metrics/custom-metrics
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.reporter = newrelic.agent
-        super(NewRelicReport, self).__init__()
-
-    def _rename(self, prefix, name):
-        return 'Custom/{}/{}'.format(prefix, '/'.join(name.split('.')))
-
-    def _gauge(self, prefix, name, number):
-        """Not sure if this is APM counter or gauge equivalent"""
-        self.reporter.record_custom_metric(self._rename(prefix, name), number)
-
-    def _counter(self, prefix, name, number):
-        self.reporter.record_custom_metric(self._rename(prefix, name), number)
 
 
 class DummyReport(ReportBase):
