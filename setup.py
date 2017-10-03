@@ -24,7 +24,7 @@ def read(*names, **kwargs):
 
 setup(
     name='python-report-metric',
-    version='0.1.0a2.dev0',
+    version='0.2.0a1',
     license='BSD',
     description='Unified metric recording',
     long_description='%s\n%s' % (
